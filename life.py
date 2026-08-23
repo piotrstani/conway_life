@@ -61,14 +61,16 @@ KOM_ZYWA = 1
 # Znak podłogi _ to w Pythonie specjalna nazwa dla zmiennej, która mówi: "
 # Muszę wykonać tę pętlę konkretną liczbę razy, ale sama wartość indeksu (0, 1, 2...) mnie nie interesuje".
 # Wcześniej używałeś do tego zmiennej i
-POLE_GRY = [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
+#POLE_GRY = [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
 
+def stworz_pusta_plansze():
+    return [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
 
 # ----------------------------------------------------------------------------------------------------------------------
 # przygotowanie następnej generacji komórek, czyli zaktualizowanego POLA_GRY
 def przygotuj_populacje(polegry):
 
-    nast_gen = [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
+    nast_gen = stworz_pusta_plansze()
 
     # iterujemy po wszystkich komórkach
     for y in range(KOM_PION):
@@ -146,6 +148,7 @@ def rysuj_populacje():
 zycie_trwa = False
 przycisk_wdol = False
 
+POLE_GRY = stworz_pusta_plansze()
 # pętla główna programu
 while True:
      # obsługa zdarzeń generowanych przez gracza
