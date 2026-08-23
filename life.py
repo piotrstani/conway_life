@@ -4,21 +4,36 @@ from time import sleep
 
 import pygame
 import sys
-import random
 from pygame.locals import *  # udostępnienie nazw metod z locals
 
 # inicjacja modułu pygame
 pygame.init()
 
+# ----------------------------------------------------------------------------------------------------------------------
 # szerokość i wysokość okna gry
-OKNOGRY_SZER = 800
 OKNOGRY_WYS = 400
+INSTRUKCJA_WYS = 30
+OKNO_SZER = 800
+OKNO_WYS = OKNOGRY_WYS + INSTRUKCJA_WYS # 800x430
+OKNOGRY_SZER = OKNO_SZER
 
 # przygotowanie powierzchni do rysowania, czyli inicjacja okna gry
-OKNOGRY = pygame.display.set_mode((OKNOGRY_SZER, OKNOGRY_WYS), 0, 32)
+OKNOGRY = pygame.display.set_mode((OKNO_SZER, OKNO_WYS), 0, 32)
 
 # tytuł okna gry
 pygame.display.set_caption('Gra o życie')
+
+# Ustawienia kolorów
+white = (255, 255, 255) #instrukcja
+black = (0, 0, 0) #tło
+green = (0, 255, 0) #komórka
+
+# Ustawienia czcionki dla instrukcji
+font = pygame.font.SysFont('arial', 20)
+instrukcja_tekst = font.render('Instrukcja: LPM - ożywia, PPM - uśmierca, ENTER - start, ESC - pauza', True, (white))
+
+# ----------------------------------------------------------------------------------------------------------------------
+#Ustawienia komórka i pole gry
 
 # rozmiar komórki
 ROZ_KOM = 10
@@ -31,15 +46,22 @@ KOM_PION = int(OKNOGRY_WYS / ROZ_KOM)
 KOM_MARTWA = 0
 KOM_ZYWA = 1
 
+
 # lista opisująca stan pola gry, 0 - komórki martwe, 1 - komórki żywe
 # na początku tworzymy listę zawierającą KOM_POZIOM zer
-POLE_GRY = [KOM_MARTWA] * KOM_POZIOM
+POLE_GRY = [KOM_MARTWA] * KOM_POZIOM #[0,0,0,]
 
 # rozszerzamy listę o listy zagnieżdżone, otrzymujemy więc listę dwuwymiarową
+# POLE_GRY = [
+#     [0, 0, 0, ..., 0],  # K0 0x40
+#     [0, 0, 0, ..., 0],  # K1
+#     [0, 0, 0, ..., 0],  # K2
+#     # ... łącznie 80 takich kolumn
+# ]
 for i in range(KOM_POZIOM):
     POLE_GRY[i] = [KOM_MARTWA] * KOM_PION
 
-
+# ----------------------------------------------------------------------------------------------------------------------
 # przygotowanie następnej generacji komórek, czyli zaktualizowanego POLA_GRY
 def przygotuj_populacje(polegry):
     # na początku tworzymy 2-wymiarową listę wypełnioną zerami
@@ -115,7 +137,7 @@ def rysuj_populacje():
     for y in range(KOM_PION):
         for x in range(KOM_POZIOM):
             if POLE_GRY[x][y] == KOM_ZYWA:
-                pygame.draw.rect(OKNOGRY, (0, 255, 0), Rect(
+                pygame.draw.rect(OKNOGRY, (green), Rect(
                     (x * ROZ_KOM, y * ROZ_KOM), (ROZ_KOM, ROZ_KOM)), 1)
 
 
@@ -123,20 +145,9 @@ def rysuj_populacje():
 zycie_trwa = False
 przycisk_wdol = False
 
-white = (255, 255, 255)
-black = (0, 0, 0)
-X=800
-Y=400
-display_surface = pygame.display.set_mode((X, Y))
-font = pygame.font.Font('freesansbold.ttf', 32)
-text = font.render('GeeksForGeeks', True, white, black)
-textRect = text.get_rect()
-textRect.center = (X // 2, Y // 2)
-
 # pętla główna programu
 while True:
-    display_surface.blit(text, textRect)
-    # obsługa zdarzeń generowanych przez gracza
+     # obsługa zdarzeń generowanych przez gracza
     for event in pygame.event.get():
         # przechwyć zamknięcie okna
         if event.type == QUIT:
@@ -158,17 +169,22 @@ while True:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 mouse_x = int(mouse_x / ROZ_KOM)
                 mouse_y = int(mouse_y / ROZ_KOM)
+                print(mouse_x,mouse_y)
                 # lewy przycisk myszy ożywia
-                if przycisk_typ == 1:
-                    POLE_GRY[mouse_x][mouse_y] = KOM_ZYWA
-                # prawy przycisk myszy uśmierca
-                if przycisk_typ == 3:
-                    POLE_GRY[mouse_x][mouse_y] = KOM_MARTWA
+                if mouse_y < KOM_PION:
+                    if przycisk_typ == 1:
+                        POLE_GRY[mouse_x][mouse_y] = KOM_ZYWA
+                    if przycisk_typ == 3:
+                        POLE_GRY[mouse_x][mouse_y] = KOM_MARTWA
 
     if zycie_trwa is True:
-        sleep(1)
+        sleep(0.5)
         POLE_GRY = przygotuj_populacje(POLE_GRY)
-    OKNOGRY.fill((0, 0, 0))  # ustaw kolor okna gry
-    print(zycie_trwa)
-    rysuj_populacje()
+    OKNOGRY.fill((black))  # Czyszczenie ekranu
+    rysuj_populacje() # Rysowanie komórek
+    # Rysowanie paska z instrukcją na dole (poniżej planszy gry)
+    OKNOGRY.blit(instrukcja_tekst, (10, OKNOGRY_WYS + 5))
+
+    #print(zycie_trwa)
+
     pygame.display.update()
