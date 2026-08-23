@@ -33,7 +33,7 @@ font = pygame.font.SysFont('arial', 20)
 instrukcja_tekst = font.render(
     'Edycja: LPM - dodaje, PPM - usuwa. Start gra: ENTER - start, ESC - pauza',
     True
-    , (white)
+    , white
 )
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -129,13 +129,14 @@ def rysuj_populacje():
     for y in range(KOM_PION):
         for x in range(KOM_POZIOM):
             if POLE_GRY[x][y] == KOM_ZYWA:
-                pygame.draw.rect(OKNOGRY, (green), Rect(
+                pygame.draw.rect(OKNOGRY, green, Rect(
                     (x * ROZ_KOM, y * ROZ_KOM), (ROZ_KOM, ROZ_KOM)), 1)
 
 
 # zmienne sterujące wykorzystywane w pętli głównej
 zycie_trwa = False
 przycisk_wdol = False
+przycisk_typ = 0
 
 POLE_GRY = stworz_pusta_plansze()
 # pętla główna programu
@@ -152,7 +153,12 @@ while True:
         if event.type == KEYDOWN and event.key == K_RETURN:
             zycie_trwa = True
 
-        if zycie_trwa is False:
+#not pozwala sprawdzać wartość logiczną, a nie tylko konkretną wartość False
+#To zadziała też dla:
+#zycie_trwa =  0, ponieważ 0 jest traktowane jako wartość fałszywa False)
+#zycie_trwa = "", ponieważ pusty napis jest traktowany jako False a pusty napis "" nie jest obiektem False
+
+        if not zycie_trwa:
             if event.type == MOUSEBUTTONDOWN:
                 przycisk_wdol = True
                 przycisk_typ = event.button
@@ -170,11 +176,11 @@ while True:
                     if przycisk_typ == 3:
                         POLE_GRY[mouse_x][mouse_y] = KOM_MARTWA
 
-    if zycie_trwa is True:
+    if zycie_trwa:
         sleep(0.5)
         POLE_GRY = przygotuj_populacje(POLE_GRY)
 
-    OKNOGRY.fill((black))  # Czyszczenie ekranu
+    OKNOGRY.fill(black)  # Czyszczenie ekranu
     rysuj_populacje() # Rysowanie komórek
 
     # Rysowanie paska z instrukcją na dole (poniżej planszy gry)
