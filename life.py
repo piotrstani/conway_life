@@ -68,71 +68,54 @@ def stworz_pusta_plansze():
 
 # ----------------------------------------------------------------------------------------------------------------------
 # przygotowanie następnej generacji komórek, czyli zaktualizowanego POLA_GRY
+# Zasady przyrostu i spadku populacji – Gra w życie Conwaya:
+#
+# 1. Żywa komórka:
+#    - umiera z powodu niedoludnienia, jeśli ma mniej niż 2 żywych sąsiadów,
+#    - przeżywa, jeśli ma 2 lub 3 żywych sąsiadów,
+#    - umiera z powodu przeludnienia, jeśli ma więcej niż 3 żywych sąsiadów.
+#
+# 2. Martwa komórka:
+#    - ożywa (powstaje nowa komórka), jeśli ma dokładnie 3 żywych sąsiadów.
+#
+# W skrócie:
+#    0–1 sąsiadów → śmierć żywej komórki (niedoludnienie)
+#    2–3 sąsiadów → żywa komórka przeżywa
+#    4–8 sąsiadów → śmierć żywej komórki (przeludnienie)
+#    dokładnie 3 sąsiadów → powstanie nowej komórki
+#
+# Każda generacja jest obliczana na podstawie stanu wszystkich
+# komórek z poprzedniej generacji.
+
 def przygotuj_populacje(polegry):
+    nast_gen = stworz_pusta_plansze() #wszystkie komórki są martwe :-|
 
-    nast_gen = stworz_pusta_plansze()
-
-    # iterujemy po wszystkich komórkach
-    for y in range(KOM_PION):
-        for x in range(KOM_POZIOM):
-            # zlicz populację (żywych komórek) wokół komórki
+    for x in range(KOM_POZIOM):
+        for y in range(KOM_PION):
             populacja = 0
 
-            # wiersz 1
-            try:
-                if polegry[x - 1][y - 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            try:
-                if polegry[x][y - 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            try:
-                if polegry[x + 1][y - 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            # wiersz 2
-            try:
-                if polegry[x - 1][y] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            try:
-                if polegry[x + 1][y] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            # wiersz 3
-            try:
-                if polegry[x - 1][y + 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            try:
-                if polegry[x][y + 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
-            try:
-                if polegry[x + 1][y + 1] == KOM_ZYWA:
-                    populacja += 1
-            except IndexError:
-                pass
+            for dx in (-1, 0, 1):
+                for dy in (-1, 0, 1):
+                # (-1,-1)  (0,-1)  (1,-1)
+                # (-1, 0)  (0, 0)  (1, 0)
+                # (-1, 1)  (0, 1)  (1, 1)
+                    if dx == 0 and dy == 0: #obviously not (0, 0)
+                        continue
 
-            # "niedoludnienie" lub przeludnienie = śmierć komórki
-            if polegry[x][y] == KOM_ZYWA and (populacja < 2 or populacja > 3):
-                nast_gen[x][y] = KOM_MARTWA
-            # życie trwa
-            elif polegry[x][y] == KOM_ZYWA \
-                    and (populacja == 3 or populacja == 2):
-                nast_gen[x][y] = KOM_ZYWA
-            # nowe życie
-            elif polegry[x][y] == KOM_MARTWA and populacja == 3:
-                nast_gen[x][y] = KOM_ZYWA
-    # zwróć nowe polegry z następną generacją komórek
+                    nx = x + dx
+                    ny = y + dy
+
+                    if 0 <= nx < KOM_POZIOM and 0 <= ny < KOM_PION: #Sprawdź sąsiada tylko wtedy, gdy jego współrzędne rzeczywiście znajdują się na planszy.
+                        if polegry[nx][ny] == KOM_ZYWA:
+                            populacja += 1
+
+            if polegry[x][y] == KOM_ZYWA:
+                if populacja == 2 or populacja == 3:
+                    nast_gen[x][y] = KOM_ZYWA
+            else:
+                if populacja == 3:
+                    nast_gen[x][y] = KOM_ZYWA
+
     return nast_gen
 
 def rysuj_populacje():
@@ -184,11 +167,11 @@ while True:
     if zycie_trwa is True:
         sleep(0.5)
         POLE_GRY = przygotuj_populacje(POLE_GRY)
+
     OKNOGRY.fill((black))  # Czyszczenie ekranu
     rysuj_populacje() # Rysowanie komórek
+
     # Rysowanie paska z instrukcją na dole (poniżej planszy gry)
     OKNOGRY.blit(instrukcja_tekst, (10, OKNOGRY_WYS + 5))
-
-    #print(zycie_trwa)
 
     pygame.display.update()
