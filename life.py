@@ -30,7 +30,11 @@ green = (0, 255, 0) #komórka
 
 # Ustawienia czcionki dla instrukcji
 font = pygame.font.SysFont('arial', 20)
-instrukcja_tekst = font.render('Instrukcja: LPM - ożywia, PPM - uśmierca, ENTER - start, ESC - pauza', True, (white))
+instrukcja_tekst = font.render(
+    'Edycja: LPM - dodaje, PPM - usuwa. Start gra: ENTER - start, ESC - pauza',
+    True
+    , (white)
+)
 
 # ----------------------------------------------------------------------------------------------------------------------
 #Ustawienia komórka i pole gry
@@ -109,12 +113,14 @@ def przygotuj_populacje(polegry):
                         if polegry[nx][ny] == KOM_ZYWA:
                             populacja += 1
 
-            if polegry[x][y] == KOM_ZYWA:
-                if populacja == 2 or populacja == 3:
-                    nast_gen[x][y] = KOM_ZYWA
-            else:
-                if populacja == 3:
-                    nast_gen[x][y] = KOM_ZYWA
+            if polegry[x][y] == KOM_ZYWA and (populacja < 2 or populacja > 3):
+                nast_gen[x][y] = KOM_MARTWA
+
+            elif polegry[x][y] == KOM_ZYWA and (populacja == 3 or populacja == 2):
+                nast_gen[x][y] = KOM_ZYWA
+
+            elif polegry[x][y] == KOM_MARTWA and populacja == 3:
+                nast_gen[x][y] = KOM_ZYWA
 
     return nast_gen
 
