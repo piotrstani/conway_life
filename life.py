@@ -46,28 +46,29 @@ KOM_PION = int(OKNOGRY_WYS / ROZ_KOM)
 KOM_MARTWA = 0
 KOM_ZYWA = 1
 
-
 # lista opisująca stan pola gry, 0 - komórki martwe, 1 - komórki żywe
 # na początku tworzymy listę zawierającą KOM_POZIOM zer
-POLE_GRY = [KOM_MARTWA] * KOM_POZIOM #[0,0,0,]
-
+#POLE_GRY = [KOM_MARTWA] * KOM_POZIOM #[0,0,0,]
 # rozszerzamy listę o listy zagnieżdżone, otrzymujemy więc listę dwuwymiarową
-# POLE_GRY = [
+# polegry = [
 #     [0, 0, 0, ..., 0],  # K0 0x40
 #     [0, 0, 0, ..., 0],  # K1
 #     [0, 0, 0, ..., 0],  # K2
-#     # ... łącznie 80 takich kolumn
+#     # ... x80
 # ]
-for i in range(KOM_POZIOM):
-    POLE_GRY[i] = [KOM_MARTWA] * KOM_PION
+#for i in range(KOM_POZIOM):
+#    POLE_GRY[i] = [KOM_MARTWA] * KOM_PION
+# Znak podłogi _ to w Pythonie specjalna nazwa dla zmiennej, która mówi: "
+# Muszę wykonać tę pętlę konkretną liczbę razy, ale sama wartość indeksu (0, 1, 2...) mnie nie interesuje".
+# Wcześniej używałeś do tego zmiennej i
+POLE_GRY = [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # przygotowanie następnej generacji komórek, czyli zaktualizowanego POLA_GRY
 def przygotuj_populacje(polegry):
-    # na początku tworzymy 2-wymiarową listę wypełnioną zerami
-    nast_gen = [KOM_MARTWA] * KOM_POZIOM
-    for i in range(KOM_POZIOM):
-        nast_gen[i] = [KOM_MARTWA] * KOM_PION
+
+    nast_gen = [[KOM_MARTWA] * KOM_PION for _ in range(KOM_POZIOM)]
 
     # iterujemy po wszystkich komórkach
     for y in range(KOM_PION):
