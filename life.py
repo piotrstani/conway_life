@@ -11,14 +11,28 @@ pygame.init()
 
 # ----------------------------------------------------------------------------------------------------------------------
 # szerokość i wysokość okna gry
-OKNOGRY_WYS = 400
+OKNOGRY_WYS = 800
 INSTRUKCJA_WYS = 30
-OKNO_SZER = 800
+OKNO_SZER = 1600
 OKNO_WYS = OKNOGRY_WYS + INSTRUKCJA_WYS # 800x430
 OKNOGRY_SZER = OKNO_SZER
 
 # przygotowanie powierzchni do rysowania, czyli inicjacja okna gry
 OKNOGRY = pygame.display.set_mode((OKNO_SZER, OKNO_WYS), 0, 32)
+
+# ----------------------------------------------------------------------------------------------------------------------
+#Ustawienia komórka i pole gry
+
+# rozmiar komórki
+ROZ_KOM = 20
+
+# ilość komórek w poziomie i pionie
+KOM_POZIOM = int(OKNOGRY_SZER / ROZ_KOM)
+KOM_PION = int(OKNOGRY_WYS / ROZ_KOM)
+
+# wartości oznaczające komórki "martwe" i "żywe"
+KOM_MARTWA = 0
+KOM_ZYWA = 1
 
 # tytuł okna gry
 pygame.display.set_caption('Gra o życie')
@@ -29,26 +43,13 @@ black = (0, 0, 0) #tło
 green = (0, 255, 0) #komórka
 
 # Ustawienia czcionki dla instrukcji
-font = pygame.font.SysFont('arial', 20)
-instrukcja_tekst = font.render(
+instrukcja_font = pygame.font.SysFont('arial', 20)
+instrukcja_tekst = instrukcja_font.render(
     'Edycja: LPM - dodaje, PPM - usuwa. Start gra: ENTER - start, ESC - pauza',
     True
-    , white
-)
+    , white)
 
-# ----------------------------------------------------------------------------------------------------------------------
-#Ustawienia komórka i pole gry
 
-# rozmiar komórki
-ROZ_KOM = 10
-
-# ilość komórek w poziomie i pionie
-KOM_POZIOM = int(OKNOGRY_SZER / ROZ_KOM)
-KOM_PION = int(OKNOGRY_WYS / ROZ_KOM)
-
-# wartości oznaczające komórki "martwe" i "żywe"
-KOM_MARTWA = 0
-KOM_ZYWA = 1
 
 # lista opisująca stan pola gry, 0 - komórki martwe, 1 - komórki żywe
 # na początku tworzymy listę zawierającą KOM_POZIOM zer
@@ -159,6 +160,7 @@ while True:
 #zycie_trwa = "", ponieważ pusty napis jest traktowany jako False a pusty napis "" nie jest obiektem False
 
         if not zycie_trwa:
+            pygame.display.set_caption('Gra o życie: ŻYCIE ZAMARŁO')
             if event.type == MOUSEBUTTONDOWN:
                 przycisk_wdol = True
                 przycisk_typ = event.button
@@ -177,6 +179,7 @@ while True:
                         POLE_GRY[mouse_x][mouse_y] = KOM_MARTWA
 
     if zycie_trwa:
+        pygame.display.set_caption('Gra o życie: ŻYCIE TRWA')
         sleep(0.5)
         POLE_GRY = przygotuj_populacje(POLE_GRY)
 
