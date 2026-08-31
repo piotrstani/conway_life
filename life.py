@@ -41,6 +41,8 @@ pygame.display.set_caption('Gra o życie')
 white = (255, 255, 255) #instrukcja
 black = (0, 0, 0) #tło
 green = (0, 255, 0) #komórka
+gray = (50, 50, 50)  #instrukcje tło
+red = (255, 0, 0)
 
 # Ustawienia czcionki dla instrukcji
 instrukcja_font = pygame.font.SysFont('arial', 20)
@@ -49,7 +51,11 @@ instrukcja_tekst = instrukcja_font.render(
     True
     , white)
 
-
+# Ustawienia czcionki dla STOP
+stop_tekst = instrukcja_font.render(
+    '----- ŻYCIE ZAMARŁO -----',
+    True
+    , red)
 
 # lista opisująca stan pola gry, 0 - komórki martwe, 1 - komórki żywe
 # na początku tworzymy listę zawierającą KOM_POZIOM zer
@@ -161,6 +167,9 @@ while True:
 
         if not zycie_trwa:
             pygame.display.set_caption('Gra o życie: ŻYCIE ZAMARŁO')
+
+
+
             if event.type == MOUSEBUTTONDOWN:
                 przycisk_wdol = True
                 przycisk_typ = event.button
@@ -187,6 +196,16 @@ while True:
     rysuj_populacje() # Rysowanie komórek
 
     # Rysowanie paska z instrukcją na dole (poniżej planszy gry)
+    tekst_wys = instrukcja_tekst.get_size()[1]
+    pygame.draw.rect( OKNOGRY, gray, (0, OKNOGRY_WYS, OKNOGRY.get_width(), tekst_wys + 10))
     OKNOGRY.blit(instrukcja_tekst, (10, OKNOGRY_WYS + 5))
+
+    # Rysowanie paska stop/game over
+    stop_tekst_szer, stop_tekst_wys = stop_tekst.get_size()
+    x = (OKNOGRY.get_width() - stop_tekst_szer) // 2
+    y = (OKNOGRY.get_height() - stop_tekst_wys) // 2
+    pygame.draw.rect(OKNOGRY, gray, (0, y, OKNOGRY.get_width(), stop_tekst_wys))
+    OKNOGRY.blit(stop_tekst, (x, y))
+
 
     pygame.display.update()
